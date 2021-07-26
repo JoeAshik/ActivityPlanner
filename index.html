@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+    <!--
+    <script src="https://ajax.googleaspis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/easytimer.js@4.4.0/dist/easytimer.min.js"></script>
+    <script>const timerInst = [new easytimer.Timer()];</script>
+    <script src="script.js"></script>
+     <title>Activity Tracker</title>
+</head>
+<body>
+<p id="display"></p>
+<form>
+ <input type="text" id="task" onkeypress="return event.keyCode != 13;"><br/>
+ <input type="button" value = "Submit" onclick="displayTask(); enterTask();">
+</form>
+<ul id = 'taskList'>
+    <li>Sample Element <button onclick = "Timer(this);" data-status="Stop" id = 0>Start/Stop</button><span data-timerDisplayNo = 0></span><button onclick = "deleteLi(this);" >X</button></li>
+</ul>
+</body>
+</html>
