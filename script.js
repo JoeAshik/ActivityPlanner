@@ -25,12 +25,12 @@ function enterTask()
    var timerButton = document.createElement("button");
     timerButton.innerHTML="Start/Stop";
     timerButton.setAttribute("onclick","Timer(this);");
-    timerButton.id=taskNo;
+    timerButton.setAttribute("data-no",taskNo);
     timerButton.setAttribute("data-status","Stop");
     li.appendChild(timerButton);
 
     var counter = document.createElement("span");
-    counter.setAttribute("data-timerDisplayNo","taskNo");
+    counter.id = taskNo;
     li.appendChild(counter);
      
     var close = document.createElement("button");
@@ -49,7 +49,7 @@ function deleteLi(task)
 }
 
 function Timer(tButton)
-{var timerId = tButton.id;
+{var timerId = tButton.getAttribute("data-no");
 if (tButton.getAttribute("data-status")=="Start")
     {
     timerInst[timerId].pause();
@@ -59,11 +59,14 @@ if (tButton.getAttribute("data-status")=="Start")
     {timerInst[timerId].start();
     setInterval(function()
                 {
-                //var timedisplay = document.getElementById("showTimer");
-                var timedisplay = document.querySelector('[data-timerDisplayNo="timerId"]');
+                var timedisplay = document.getElementById(timerId);
+                //var timedisplay = document.querySelector('[data-timerDisplayNo="timerId"]');
+                
                 timeValues = timerInst[timerId].getTimeValues();
                 timedisplay.innerHTML = timeValues.hours+":"+timeValues.minutes+":"+timeValues.seconds;
                 },1000);
     tButton.setAttribute("data-status","Start");
     }
+}
+
 }
