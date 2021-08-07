@@ -7,6 +7,15 @@ function displayTask()
 
 }
 
+function sendpost(act,hours,mins,secs)
+{
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("activity="+act+"&hours="+hours+"&minutes="+mins+"&seconds="+secs);
+} 
+
+
 
 function enterTask()
 
@@ -50,23 +59,25 @@ function deleteLi(task)
 
 function Timer(tButton)
 {var timerId = tButton.getAttribute("data-no");
+var timedisplay = document.getElementById(timerId);
+timeValues = timerInst[timerId].getTimeValues();
+var actname = tButton.parentElement.childNodes[0].textContent;
+var hours = timeValues.hours;
+var mins = timeValues.minutes;
+var secs = timeValues.seconds;                
 if (tButton.getAttribute("data-status")=="Start")
     {
     timerInst[timerId].pause();
+    sendpost(actname,hours,mins,secs);
     tButton.setAttribute("data-status","Stop");
     }
     else
     {timerInst[timerId].start();
     setInterval(function()
                 {
-                var timedisplay = document.getElementById(timerId);
-                //var timedisplay = document.querySelector('[data-timerDisplayNo="timerId"]');
-                
-                timeValues = timerInst[timerId].getTimeValues();
                 timedisplay.innerHTML = timeValues.hours+":"+timeValues.minutes+":"+timeValues.seconds;
                 },1000);
     tButton.setAttribute("data-status","Start");
     }
 }
 
-}
