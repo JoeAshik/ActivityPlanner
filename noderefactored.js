@@ -24,46 +24,60 @@ con.connect(function(err) {
 });
 }
 
+function returnhtml(res)
+{
+  fs.readFile('index.html', function(err, data) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    return res.end();
+  });
+}
 
-http.createServer(async function (req, res) {
-  if(req.url === "/script.js") {
-      var file = fs.createReadStream('script.js');
-      file.pipe(res);
-      res.writeHead(200, {'Content-Type': 'text/javascript'});}
-      else if(req.method == "POST")
-      {
-          console.log("POST Request Recieved");
-          var body = '';
-          req.on('data', function (data) {
-          body += data;
-          });
-          req.on('end',async function () {
-              var post = qs.parse(body);
-              let lol = await insertquery(con,post.activity,post.hours,post.minutes,post.seconds);
-              //insertdb(post.activity,post.hours,post.minutes,post.seconds);
-          }); 
-          res.end("received POST request.");
-      }
-      
-      ///*
-      else if(req.url == "/posts")
-      {
-        console.log("GET Request Receieved");
+async function postmethod(req,res)
+{
+  console.log("POST Request Recieved");
+  var body = '';
+  req.on('data', function (data) {
+  body += data;
+  });
+  req.on('end',async function () {
+      var post = qs.parse(body);
+      let lol = await insertquery(con,post.activity,post.hours,post.minutes,post.seconds);
+      //insertdb(post.activity,post.hours,post.minutes,post.seconds);
+  }); 
+}
+
+async function getmethod(res)
+{
+  console.log("GET Request Receieved");
         let initialresult = await displayquery(con);
         //console.log(initialresult);
         let converted = convertdata(initialresult);
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.write(JSON.stringify(converted));
         res.end();
-        
+}
+
+
+http.createServer(async function (req, res) {
+  if(req.url === "/script.js") {
+      var file = fs.createReadStream('script.js');
+      file.pipe(res);
+      res.writeHead(200, {'Content-Type': 'text/javascript'});}
+  
+      else if(req.method == "POST")
+      {
+          postmethod(req,res);
       }
-      //*/
+       
+      else if(req.url == "/posts")
+      {
+        getmethod(res);  
+      }
+      
       else{
-  fs.readFile('index.html', function(err, data) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.write(data);
-  return res.end();
-});
+        returnhtml(res);
+      
 }}).listen(8080); 
 
 //insertdb('LOOL',200,2,4);
@@ -128,7 +142,7 @@ async function insertquery(con,act,hours,mins,secs)
   let query2 = "INSERT INTO acttime(activity,hours,minutes,seconds) VALUES(?,?,?,?)"
   let query3 = "UPDATE acttime SET hours =?,minutes=?,seconds=? WHERE activity= ? AND actdate = curdate();"
   values2 = [act,hours,mins,secs];
-  values3 = [hours,mins,secs];
+  values3 = [hours,mins,secs,act];
 
   let result = await queryfunction(con,query1,[act]);
   if (result.length == 0)
