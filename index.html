@@ -8,14 +8,30 @@
 </head>
 <body>
 <p id="display"></p>
+
+<select id="pastacts">
+    <option value="Sample Element">Sample Element</option>
+</select>
+<button onclick = addOld();enterTask();>Add</button>
+
 <form>
  <input type="text" id="task" onkeypress="return event.keyCode != 13;"><br/>
- <input type="button" value = "Submit" onclick="displayTask(); enterTask();">
+ <input type="button" value = "Submit" onclick="displayTask(); submitTask();">
 </form>
 
+<table id ="taskTable">
 <ul id = 'taskList'>
-    <li>Sample Element <button onclick = "Timer(this);" data-status="Stop" data-no = 0>Start/Stop</button><span id = 0></span><button onclick = "deleteLi(this);" >X</button></li>
+    <tr>
+        <li>
+            <td info="Activity">Sample Element</td>
+            <td><button onclick = "Timer(this);" data-status="Stop" data-no = 0>Start/Stop</button></td>
+            </td><span id = 0></span></td>
+            <td><button onclick = "deleteLi(this);" >X</button></td>
+        </li>
+    </tr>       
 </ul>
+</table>
 
+<button onclick = receivepost();>GET POST</button>
 </body>
 </html>
