@@ -3,10 +3,15 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/easytimer.js@4.4.0/dist/easytimer.min.js"></script>
     <script>const timerInst = [new easytimer.Timer()];</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
+    <link rel = "stylesheet" href = "style.css">
      <title>Activity Tracker</title>
 </head>
 <body>
+
+<div class = "column">
+    <div class="centered">   
 <p id="display"></p>
 
 <select id="pastacts">
@@ -20,18 +25,32 @@
 </form>
 
 <table id ="taskTable">
-<ul id = 'taskList'>
     <tr>
-        <li>
             <td info="Activity">Sample Element</td>
             <td><button onclick = "Timer(this);" data-status="Stop" data-no = 0>Start/Stop</button></td>
-            </td><span id = 0></span></td>
-            <td><button onclick = "deleteLi(this);" >X</button></td>
-        </li>
+            <td><span id = 0></span></td>
+            <td><button onclick = "deleteLi(this);" >X</button></td>       
     </tr>       
-</ul>
 </table>
 
 <button onclick = receivepost();>GET POST</button>
+</div>
+</div> 
+
+<div class="column">
+    <div class="centered">
+        <div id="chartDisplay">
+        <canvas id="myChart" width="100" height="100"></canvas>
+        </div>
+        <select id="chartDuration">
+            <option>Select Chart Duration</option>
+            <option value="today">Today</option>
+            <option value="alltime">All Time</option>
+        </select>
+        <button onclick = "receiveDaysNo();">DISPLAY</button>
+        <label for="myCheck">With Remaining Time:</label> <input type="checkbox" id="myCheck" onclick="toggleRem();">
+
+    </div>
+</div> 
 </body>
 </html>
