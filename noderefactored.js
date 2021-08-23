@@ -24,81 +24,6 @@ con.connect(function(err) {
 });
 }
 
-function returnhtml(res)
-{
-  fs.readFile('index.html', function(err, data) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(data);
-    return res.end();
-  });
-}
-
-async function postmethod(req,res)
-{
-  console.log("POST Request Recieved");
-  var body = '';
-  req.on('data', function (data) {
-  body += data;
-  });
-  req.on('end',async function () {
-      var post = qs.parse(body);
-      let lol = await insertquery(con,post.activity,post.hours,post.minutes,post.seconds);
-      //insertdb(post.activity,post.hours,post.minutes,post.seconds);
-  }); 
-}
-
-async function getmethod(res)
-{
-  console.log("GET Request Receieved");
-        let initialresult = await displayquery(con);
-        //console.log(initialresult);
-        let converted = convertdata(initialresult);
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.write(JSON.stringify(converted));
-        res.end();
-}
-
-
-http.createServer(async function (req, res) {
-  if(req.url === "/script.js") {
-      var file = fs.createReadStream('script.js');
-      file.pipe(res);
-      res.writeHead(200, {'Content-Type': 'text/javascript'});}
-  
-      else if(req.method == "POST")
-      {
-          postmethod(req,res);
-      }
-       
-      else if(req.url == "/posts")
-      {
-        getmethod(res);  
-      }
-      
-      else{
-        returnhtml(res);
-      
-}}).listen(8080); 
-
-//insertdb('LOOL',200,2,4);
-//querydb();
-
-
-
-function convertdata(result) 
-{
-
-let len = result.length;
-const actdata  = {};
-actdata.data = [];
-for(i=0;i<len;i++)
-{
-  actdata.data[i]=result[i];
-}
-return actdata;
-}
-
-
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -123,6 +48,21 @@ return (value);
 async function displayquery(con)
 {
   let query = "SELECT * FROM acttime WHERE actdate = curdate();"
+  let result = await queryfunction(con,query)
+  return result;
+}
+
+async function noOfDayQuery(con)
+{
+  let query = "SELECT DATEDIFF(CURDATE(),actdate) AS noOfDays from acttime ORDER BY actdate ASC LIMIT 1;"
+  let result = await queryfunction(con,query)
+  return result;
+  
+}
+
+async function displayAllquery(con)
+{
+  let query = "SELECT * FROM acttime;"
   let result = await queryfunction(con,query)
   return result;
 }
@@ -157,4 +97,102 @@ async function insertquery(con,act,hours,mins,secs)
     return;
   }
 }
+
+function returnhtml(res)
+{
+  fs.readFile('index.html', function(err, data) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    return res.end();
+  });
+}
+
+async function postmethod(req,res)
+{
+  console.log("POST Request Recieved");
+  var body = '';
+  req.on('data', function (data) {
+  body += data;
+  });
+  req.on('end',async function () {
+      var post = qs.parse(body);
+      let lol = await insertquery(con,post.activity,post.hours,post.minutes,post.seconds);
+      //insertdb(post.activity,post.hours,post.minutes,post.seconds);
+  }); 
+}
+
+async function getmethod(res,duration="today")
+{
+  let initialresult;
+  console.log("GET Request Receieved");
+    if(duration == "today")
+        initialresult = await displayquery(con);
+    else if(duration == "alltime")
+        initialresult = await displayAllquery(con);
+      else if(duration == "daysNo")
+        initialresult = await noOfDayQuery(con);
+        //console.log(initialresult);
+        let converted = convertdata(initialresult);
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.write(JSON.stringify(converted));
+        res.end();
+}
+
+
+http.createServer(async function (req, res) {
+  if(req.url === "/script.js") {
+      var file = fs.createReadStream('script.js');
+      file.pipe(res);
+      res.writeHead(200, {'Content-Type': 'text/javascript'});}
+  
+  else if(req.url == "/style.css")
+    {
+    let cssfile = fs.createReadStream('style.css');
+    cssfile.pipe(res);
+    }
+      else if(req.method == "POST")
+      {
+          postmethod(req,res);
+      }
+       
+      else if(req.url == "/todayposts")
+      {
+        getmethod(res,"today");  
+      }
+
+      else if(req.url == "/daysNo")
+      {
+        getmethod(res,"daysNo");  
+      }
+
+      else if(req.url == "/allposts")
+      {
+        getmethod(res,"alltime");  
+      }
+
+      else{
+        returnhtml(res);
+      
+}}).listen(8080); 
+
+//insertdb('LOOL',200,2,4);
+//querydb();
+
+
+
+function convertdata(result) 
+{
+
+let len = result.length;
+const actdata  = {};
+actdata.data = [];
+for(i=0;i<len;i++)
+{
+  actdata.data[i]=result[i];
+}
+return actdata;
+}
+
+
+
 
